@@ -1,0 +1,51 @@
+# Investigate Agent - 调研 Agent 配置
+# 负责知识检索、信息搜索和初步分析
+
+version: 1
+
+agent:
+  # 继承 default Agent
+  extend: default
+  
+  name: investigate
+  description: "调研 Agent - 检索知识库、搜索信息，收集解决问题所需的基础知识和参考资料"
+  
+  # 系统提示词
+  system_prompt_path: ./prompts/investigate_system.md
+  
+  # 工具配置 - 调研 Agent 需要搜索和知识检索工具
+  tools:
+    # 文件操作
+    - "kimi_cli.tools.file:ReadFile"
+    - "kimi_cli.tools.file:Glob"
+    - "kimi_cli.tools.file:Grep"
+    
+    # Web 搜索
+    - "kimi_cli.tools.web:SearchWeb"
+    - "kimi_cli.tools.web:FetchURL"
+    
+    # Shell 命令（用于执行知识库查询脚本等）
+    - "kimi_cli.tools.shell:Shell"
+    
+    # 思考记录
+    - "kimi_cli.tools.think:Think"
+    
+    # 待办事项
+    - "kimi_cli.tools.todo:SetTodoList"
+  
+  # 注意：子 Agent 通常不启用 Task 工具，避免嵌套调用
+  
+  # 传递给系统提示词的自定义参数
+  system_prompt_args:
+    AGENT_ROLE: "investigate"
+    CAPABILITIES: |
+      - 搜索网络获取最新信息
+      - 读取本地知识库文件
+      - 检索相关文档和资料
+      - 初步整理收集到的信息
+    WORKFLOW: |
+      1. 分析问题，确定需要调研的关键知识点
+      2. 使用搜索工具查找相关信息
+      3. 读取本地知识库中的相关资料
+      4. 整理收集到的信息，标注来源
+      5. 输出调研结果，为后续分析提供基础

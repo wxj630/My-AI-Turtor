@@ -1,0 +1,50 @@
+# Manager Agent - 规划 Agent 配置
+# 负责制定解题步骤和执行计划
+
+version: 1
+
+agent:
+  # 继承 default Agent
+  extend: default
+  
+  name: manager
+  description: "规划 Agent - 基于问题和已有知识，制定详细的解题步骤和执行计划"
+  
+  # 系统提示词
+  system_prompt_path: ./prompts/manager_system.md
+  
+  # 工具配置 - 规划 Agent 需要分析和思考工具
+  tools:
+    # 文件操作
+    - "kimi_cli.tools.file:ReadFile"
+    - "kimi_cli.tools.file:WriteFile"
+    - "kimi_cli.tools.file:Glob"
+    - "kimi_cli.tools.file:Grep"
+    
+    # 思考记录
+    - "kimi_cli.tools.think:Think"
+    
+    # 待办事项
+    - "kimi_cli.tools.todo:SetTodoList"
+    
+    # 用户交互（用于确认计划）
+    - "kimi_cli.tools.ask_user:AskUserQuestion"
+  
+  # 传递给系统提示词的自定义参数
+  system_prompt_args:
+    AGENT_ROLE: "manager"
+    CAPABILITIES: |
+      - 分析问题的难点和关键点
+      - 基于已有知识制定解题策略
+      - 将复杂问题分解为可执行的步骤
+      - 规划代码实现和验证方案
+      - 制定清晰可执行的计划
+    WORKFLOW: |
+      1. 深入理解问题需求和约束条件
+      2. 分析已有知识和笔记内容
+      3. 确定解题的关键难点和突破点
+      4. 设计解题策略和算法思路
+      5. 将解题过程分解为具体步骤
+      6. 为每个步骤制定详细的执行计划
+      7. 规划代码实现、可视化和验证方案
+      8. 输出结构化的解题计划文档

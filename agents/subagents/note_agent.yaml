@@ -1,0 +1,45 @@
+# Note Agent - 笔记 Agent 配置
+# 负责整理调研结果，生成结构化的知识笔记
+
+version: 1
+
+agent:
+  # 继承 default Agent
+  extend: default
+  
+  name: note
+  description: "笔记 Agent - 整理调研结果，生成结构化的知识笔记，标注重点和疑问"
+  
+  # 系统提示词
+  system_prompt_path: ./prompts/note_system.md
+  
+  # 工具配置 - 笔记 Agent 主要需要文件操作和思考工具
+  tools:
+    # 文件操作
+    - "kimi_cli.tools.file:ReadFile"
+    - "kimi_cli.tools.file:WriteFile"
+    - "kimi_cli.tools.file:Glob"
+    - "kimi_cli.tools.file:Grep"
+    
+    # 思考记录
+    - "kimi_cli.tools.think:Think"
+    
+    # 待办事项
+    - "kimi_cli.tools.todo:SetTodoList"
+  
+  # 传递给系统提示词的自定义参数
+  system_prompt_args:
+    AGENT_ROLE: "note"
+    CAPABILITIES: |
+      - 分析整理调研结果
+      - 生成结构化的知识笔记
+      - 标注重点概念和难点
+      - 记录疑问和待确认的问题
+      - 建立知识点之间的联系
+    WORKFLOW: |
+      1. 阅读调研结果和相关资料
+      2. 提取关键概念和知识点
+      3. 按照逻辑结构组织笔记
+      4. 标注重点、难点和疑问
+      5. 生成结构化的知识笔记文档
+      6. 为后续解题提供清晰的知识基础

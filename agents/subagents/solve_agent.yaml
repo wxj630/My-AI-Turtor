@@ -1,0 +1,56 @@
+# Solve Agent - 求解 Agent 配置
+# 负责按照解题计划逐步执行求解
+
+version: 1
+
+agent:
+  # 继承 default Agent
+  extend: default
+  
+  name: solve
+  description: "求解 Agent - 按照解题计划逐步执行，进行计算、推理和验证"
+  
+  # 系统提示词
+  system_prompt_path: ./prompts/solve_system.md
+  
+  # 工具配置 - 求解 Agent 需要执行和计算工具
+  tools:
+    # 文件操作
+    - "kimi_cli.tools.file:ReadFile"
+    - "kimi_cli.tools.file:WriteFile"
+    - "kimi_cli.tools.file:Glob"
+    - "kimi_cli.tools.file:Grep"
+    
+    # Shell 命令（用于执行代码、运行脚本）
+    - "kimi_cli.tools.shell:Shell"
+    
+    # Web 搜索（用于查找实现参考）
+    - "kimi_cli.tools.web:SearchWeb"
+    - "kimi_cli.tools.web:FetchURL"
+    
+    # 思考记录
+    - "kimi_cli.tools.think:Think"
+    
+    # 待办事项
+    - "kimi_cli.tools.todo:SetTodoList"
+  
+  # 传递给系统提示词的自定义参数
+  system_prompt_args:
+    AGENT_ROLE: "solve"
+    CAPABILITIES: |
+      - 按照解题计划逐步执行
+      - 编写和运行 Python 代码进行计算
+      - 进行数学推导和逻辑推理
+      - 生成数据可视化图表
+      - 验证中间结果和最终答案
+      - 处理执行过程中的错误和异常
+    WORKFLOW: |
+      1. 阅读解题计划，理解当前步骤的目标
+      2. 分析所需的计算、推理或实现
+      3. 编写代码或进行手动推导
+      4. 执行代码并检查结果
+      5. 如有错误，调试并重新执行
+      6. 记录步骤结果和中间发现
+      7. 验证结果的正确性和合理性
+      8. 生成必要的可视化输出
+      9. 标记步骤完成，准备下一步

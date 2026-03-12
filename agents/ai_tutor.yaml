@@ -1,0 +1,78 @@
+# AI Tutor - 主 Agent 配置
+# 集成 default Agent，定义多个子 Agent 用于复杂学习问题分析
+
+version: 1
+
+agent:
+  # 继承 default Agent 的工具和基础配置
+  extend: default
+  
+  name: ai_tutor
+  description: "AI 助教 - 复杂学习问题分析与解答系统"
+  
+  # 系统提示词 - 定义 AI 助教的核心角色
+  system_prompt_path: ./prompts/ai_tutor_system.md
+  
+  # 工具配置 - 继承 default 后添加/排除特定工具
+  tools:
+    # 多 Agent 任务调度 - 关键工具，用于调用子 Agent
+    - "kimi_cli.tools.multiagent:Task"
+    
+    # 文件操作工具
+    - "kimi_cli.tools.file:ReadFile"
+    - "kimi_cli.tools.file:WriteFile"
+    - "kimi_cli.tools.file:Glob"
+    - "kimi_cli.tools.file:Grep"
+    
+    # Shell 命令
+    - "kimi_cli.tools.shell:Shell"
+    
+    # Web 搜索与抓取
+    - "kimi_cli.tools.web:SearchWeb"
+    - "kimi_cli.tools.web:FetchURL"
+    
+    # 用户交互
+    - "kimi_cli.tools.ask_user:AskUserQuestion"
+    
+    # 待办事项管理
+    - "kimi_cli.tools.todo:SetTodoList"
+    
+    # 思考记录
+    - "kimi_cli.tools.think:Think"
+  
+  # 子 Agent 定义
+  subagents:
+    # 1. 调研 Agent - 知识检索与初步分析
+    investigate:
+      path: ./subagents/investigate_agent.yaml
+      description: "调研 Agent - 检索知识库、搜索信息，收集解决问题所需的基础知识和参考资料"
+    
+    # 2. 笔记 Agent - 知识整理与分析
+    note:
+      path: ./subagents/note_agent.yaml
+      description: "笔记 Agent - 整理调研结果，生成结构化的知识笔记，标注重点和疑问"
+    
+    # 3. 规划 Agent - 解题步骤规划
+    manager:
+      path: ./subagents/manager_agent.yaml
+      description: "规划 Agent - 基于问题和已有知识，制定详细的解题步骤和执行计划"
+    
+    # 4. 求解 Agent - 逐步执行求解
+    solve:
+      path: ./subagents/solve_agent.yaml
+      description: "求解 Agent - 按照解题计划逐步执行，进行计算、推理和验证"
+    
+    # 5. 响应 Agent - 生成最终回答
+    response:
+      path: ./subagents/response_agent.yaml
+      description: "响应 Agent - 整合所有分析结果，生成清晰、完整的最终解答"
+
+  # 传递给系统提示词的自定义参数
+  system_prompt_args:
+    TUTOR_NAME: "AI 助教"
+    WORKFLOW_DESC: |
+      1. 使用 investigate 子 Agent 进行知识检索
+      2. 使用 note 子 Agent 整理笔记
+      3. 使用 manager 子 Agent 制定解题计划
+      4. 使用 solve 子 Agent 逐步求解
+      5. 使用 response 子 Agent 生成最终解答

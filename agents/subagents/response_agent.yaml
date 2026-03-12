@@ -1,0 +1,51 @@
+# Response Agent - 响应 Agent 配置
+# 负责整合所有分析结果，生成最终解答
+
+version: 1
+
+agent:
+  # 继承 default Agent
+  extend: default
+  
+  name: response
+  description: "响应 Agent - 整合所有分析结果，生成清晰、完整的最终解答"
+  
+  # 系统提示词
+  system_prompt_path: ./prompts/response_system.md
+  
+  # 工具配置 - 响应 Agent 主要需要文件读取和输出工具
+  tools:
+    # 文件操作
+    - "kimi_cli.tools.file:ReadFile"
+    - "kimi_cli.tools.file:WriteFile"
+    - "kimi_cli.tools.file:Glob"
+    - "kimi_cli.tools.file:Grep"
+    
+    # 思考记录
+    - "kimi_cli.tools.think:Think"
+    
+    # 待办事项
+    - "kimi_cli.tools.todo:SetTodoList"
+    
+    # 用户交互（用于确认最终输出）
+    - "kimi_cli.tools.ask_user:AskUserQuestion"
+  
+  # 传递给系统提示词的自定义参数
+  system_prompt_args:
+    AGENT_ROLE: "response"
+    CAPABILITIES: |
+      - 阅读并理解所有子 Agent 的分析结果
+      - 整合调研、笔记、求解等各阶段输出
+      - 生成结构清晰、逻辑连贯的最终解答
+      - 确保解答完整回答用户原始问题
+      - 添加必要的解释、示例和可视化描述
+      - 保持友好、易懂的教学语气
+    WORKFLOW: |
+      1. 阅读所有子 Agent 生成的分析文档和结果
+      2. 理解用户原始问题的核心需求
+      3. 梳理从调研到求解的完整思考过程
+      4. 组织解答结构：背景介绍、核心概念、详细推导、示例说明
+      5. 用清晰、易懂的语言撰写最终解答
+      6. 确保包含所有必要的公式、代码和可视化描述
+      7. 添加总结和学习建议
+      8. 输出格式良好的最终文档
